@@ -87,3 +87,10 @@ h1 {
 #bowl-right {
   right: 0;
 }
+.bag {
+  max-width: 200px;
+  display: block;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
