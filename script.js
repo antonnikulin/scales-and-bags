@@ -13,18 +13,30 @@
 
         moveBag(event);
 
-        document.onmousemove = function (e) {
-            moveBag(e);
+        document.onmousemove = function (event) {
+            moveBag(event);
         };
 
         bag.onmouseup = function () {
             document.onmousemove = null;
             bag.onmouseup = null;
+            dropBag(event);
         };
 
         function moveBag(event) {
             bag.style.left = event.pageX - shiftX + 'px';
             bag.style.top = event.pageY - shiftY + 'px';
+        }
+
+        function dropBag(event) {
+            var top = getCoords(bag).top;
+
+            var interval = setInterval(function () {
+                console.log(top);
+                if (top >= 700) clearInterval(interval);
+                top += 5;
+                bag.style.top = top + 'px';
+            }, 1);
         }
     }
 
