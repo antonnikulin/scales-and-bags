@@ -2,12 +2,28 @@
     var droped;
     var bowlLeft = document.getElementById('bowl-left');
     var bowlRight = document.getElementById('bowl-right');
+    var arrow = document.getElementById('arrow');
+    var angle = 0;
+
+    var weight = {
+        left: 0,
+        right: 0,
+        balance: function () {
+            return this.right - this.left;
+        }
+    }
 
     document.onmousedown = function (event) {
         if (event.target.className != 'bag') return;
 
         clearInterval(droped);
         var bag = event.target;
+        var bagWeight = bag.getAttribute('data-weight');
+
+        if (bag.getAttribute('data-over') != null) {
+            changeWeight(-bagWeight, bag.getAttribute('data-over'));
+        }
+
         bag.ondragstart = function () {
             return false;
         };
@@ -35,39 +51,16 @@
 
         function dropBag(event) {
             var newCoords = getCoords(bag);
-            var bagCenter = newCoords.left + bag.clientWidth / 2;
 
-            var coordBowLeft = getCoords(bowlLeft);
-            var coordBowRight = getCoords(bowlRight);
-
-            var isOverBowlLeft = (bagCenter >= coordBowLeft.left) && (bagCenter <= coordBowLeft.right);
-            var isOverBowlRight = (bagCenter >= coordBowRight.left) && (bagCenter <= coordBowRight.right);
-
-            var bowl = null;
-
-            if (isOverBowlLeft) bowl = bowlLeft;
-            if (isOverBowlRight) bowl = bowlRight;
-
-            var coordsBowl = bowl ? getCoords(bowl) : undefined;
-
-            var maxDroped = bowl && (newCoords.top <= coordsBowl.top - bag.clientHeight) ? coordsBowl.top - bag.clientHeight : 700;
+            // Узнаем находится ли чемодан над чашей и над какой
+            var bowls = getBowls();
+            var coordsTargetBowl = bowls ? getCoords(bowls.target) : undefined;
+            var maxDroped = bowls && (newCoords.top <= coordsTargetBowl.top - bag.clientHeight) ? coordsTargetBowl.top - bag.clientHeight : 700;
 
             droped = setInterval(function () {
                 if (newCoords.top >= maxDroped) {
-                    // Тут должна быть реакция чаши на упавший чемодан
-                    if (maxDroped == coordsBowl.top - bag.clientHeight) {
-                        var bowlTop = parseFloat(getComputedStyle(bowl).top);
-                        var counter = 0;
-
-                        var reaction = setInterval(function () {
-                            if (counter == 10) clearInterval(reaction);
-                            newCoords.top += 1;
-                            bag.style.top = newCoords.top + 'px';
-
-                            bowlTop += 1;
-                            bowl.style.top = bowlTop + 'px';
-                            counter++;
-                        }, 10);
+                    if (maxDroped == coordsTargetBowl.top - bag.clientHeight) {
+                        changeWeight(bagWeight, bowls.side);
                     }
 
                     clearInterval(droped);
@@ -75,6 +68,67 @@
                 newCoords.top += 3;
                 bag.style.top = newCoords.top + 'px';
             }, 1);
+
+            function getBowls() {
+                var bagCenter = newCoords.left + bag.clientWidth / 2;
+
+                var coordBowLeft = getCoords(bowlLeft);
+                var coordBowRight = getCoords(bowlRight);
+
+                var isOverBowlLeft = (bagCenter >= coordBowLeft.left) && (bagCenter <= coordBowLeft.right);
+                var isOverBowlRight = (bagCenter >= coordBowRight.left) && (bagCenter <= coordBowRight.right);
+
+                var bowl, anotherBow, side;
+
+                if (isOverBowlLeft) {
+                    bowl = bowlLeft;
+                    anotherBow = bowlRight;
+                    side = 'left';
+                }
+
+                if (isOverBowlRight) {
+                    bowl = bowlRight;
+                    anotherBow = bowlLeft;
+                    side = 'right';
+                }
+
+                if (bowl) {
+                    return {
+                        target: bowl,
+                        another: anotherBow,
+                        side: side
+                    }
+                } else {
+                    bag.setAttribute('data-over', null);
+                    return null;
+                }
+            }
+
+            function changeWeight(weightBag, side) {
+                weight[side] += +weightBag;
+                bag.setAttribute('data-over', side);
+                console.log(weight.balance());
+
+                var bowlTop = parseFloat(getComputedStyle(bowls.target).top);
+                var anotherBowTop = parseFloat(getComputedStyle(bowls.another).top);
+                var counter = 0;
+
+                var reaction = setInterval(function () {
+                    if (counter >= weightBag) clearInterval(reaction);
+                    newCoords.top += +weightBag;
+                    bag.style.top = newCoords.top + 'px';
+
+                    bowlTop += +weightBag;
+                    bowls.target.style.top = bowlTop + 'px';
+
+                    anotherBowTop -= weightBag;
+                    bowls.another.style.top = anotherBowTop + 'px';
+                    angle -= 1;
+
+                    arrow.style.transform = 'rotate(' + weight.balance() * 10 + 'deg)';
+                    counter++;
+                }, 10);
+            }
         }
     }
 
