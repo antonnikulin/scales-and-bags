@@ -1,10 +1,5 @@
 (function () {
     var droped;
-    var bowlLeft = document.getElementById('bowl-left');
-    var bowlRight = document.getElementById('bowl-right');
-    var arrow = document.getElementById('arrow');
-    var angle = 0;
-
     var weight = {
         left: 0,
         right: 0,
@@ -13,15 +8,37 @@
         }
     }
 
+    var scales = {
+        leftBowl: document.getElementById('bowl-left'),
+        rightBowl: document.getElementById('bowl-right'),
+        arrow: document.getElementById('arrow'),
+        changeWeight: function (weightBag, side) {
+            weight[side] += weightBag;
+            var balance = weight.balance();
+
+            var opposite = side == 'left' ? 'right' : 'left';
+
+            var bowlTarget = this[side + 'Bowl'];
+            var bowlOpposite = this[opposite + 'Bowl'];
+
+            var topBowlTarget = parseFloat(getComputedStyle(bowlTarget).top);
+            var topBowlOpposite = parseFloat(getComputedStyle(bowlOpposite).top);
+
+            bowlTarget.style.top = topBowlTarget + weightBag + 'px';
+            bowlOpposite.style.top = topBowlOpposite - weightBag + 'px';
+            scales.arrow.style.transform = 'rotate(' + weight.balance() + 'deg)';
+        }
+    }
+
     document.onmousedown = function (event) {
         if (event.target.className != 'bag') return;
-
         clearInterval(droped);
+
         var bag = event.target;
         var bagWeight = bag.getAttribute('data-weight');
 
-        if (bag.getAttribute('data-over') != null) {
-            changeWeight(-bagWeight, bag.getAttribute('data-over'));
+        if (bag.getAttribute('data-over') != 'null') {
+            scales.changeWeight(-bagWeight, bag.getAttribute('data-over'));
         }
 
         bag.ondragstart = function () {
@@ -52,82 +69,42 @@
         function dropBag(event) {
             var newCoords = getCoords(bag);
 
-            // Узнаем находится ли чемодан над чашей и над какой
-            var bowls = getBowls();
-            var coordsTargetBowl = bowls ? getCoords(bowls.target) : undefined;
-            var maxDroped = bowls && (newCoords.top <= coordsTargetBowl.top - bag.clientHeight) ? coordsTargetBowl.top - bag.clientHeight : 700;
+            var side = getSide();
+            var topTargetBowl = side ? getCoords(scales[side + 'Bowl']).top : 0;
+            var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : 700;
 
+            // попробовать сделать без интервалов
             droped = setInterval(function () {
                 if (newCoords.top >= maxDroped) {
-                    if (maxDroped == coordsTargetBowl.top - bag.clientHeight) {
-                        changeWeight(bagWeight, bowls.side);
+                    if (maxDroped == topTargetBowl - bag.clientHeight) {
+                        scales.changeWeight(+bagWeight, side);
+                        var dopCoords = getCoords(bag);
+                        bag.style.top = dopCoords.top - weight;
                     }
 
                     clearInterval(droped);
                 };
-                newCoords.top += 3;
+
+                newCoords.top += +bagWeight;
                 bag.style.top = newCoords.top + 'px';
             }, 1);
 
-            function getBowls() {
+            function getSide() {
                 var bagCenter = newCoords.left + bag.clientWidth / 2;
 
-                var coordBowLeft = getCoords(bowlLeft);
-                var coordBowRight = getCoords(bowlRight);
+                var coordBowLeft = getCoords(scales.leftBowl);
+                var coordBowRight = getCoords(scales.rightBowl);
 
                 var isOverBowlLeft = (bagCenter >= coordBowLeft.left) && (bagCenter <= coordBowLeft.right);
                 var isOverBowlRight = (bagCenter >= coordBowRight.left) && (bagCenter <= coordBowRight.right);
 
-                var bowl, anotherBow, side;
+                var side = null;
 
-                if (isOverBowlLeft) {
-                    bowl = bowlLeft;
-                    anotherBow = bowlRight;
-                    side = 'left';
-                }
+                if (isOverBowlLeft) side = 'left';
+                if (isOverBowlRight) side = 'right';
 
-                if (isOverBowlRight) {
-                    bowl = bowlRight;
-                    anotherBow = bowlLeft;
-                    side = 'right';
-                }
-
-                if (bowl) {
-                    return {
-                        target: bowl,
-                        another: anotherBow,
-                        side: side
-                    }
-                } else {
-                    bag.setAttribute('data-over', null);
-                    return null;
-                }
-            }
-
-            function changeWeight(weightBag, side) {
-                weight[side] += +weightBag;
                 bag.setAttribute('data-over', side);
-                console.log(weight.balance());
-
-                var bowlTop = parseFloat(getComputedStyle(bowls.target).top);
-                var anotherBowTop = parseFloat(getComputedStyle(bowls.another).top);
-                var counter = 0;
-
-                var reaction = setInterval(function () {
-                    if (counter >= weightBag) clearInterval(reaction);
-                    newCoords.top += +weightBag;
-                    bag.style.top = newCoords.top + 'px';
-
-                    bowlTop += +weightBag;
-                    bowls.target.style.top = bowlTop + 'px';
-
-                    anotherBowTop -= weightBag;
-                    bowls.another.style.top = anotherBowTop + 'px';
-                    angle -= 1;
-
-                    arrow.style.transform = 'rotate(' + weight.balance() * 10 + 'deg)';
-                    counter++;
-                }, 10);
+                return side;
             }
         }
     }
