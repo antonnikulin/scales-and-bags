@@ -70,7 +70,6 @@ h1 {
   background-color: brown;
   position: absolute;
   top: -50px;
-  transition: 0.2s;
 }
 .bowl:after {
   content: '';

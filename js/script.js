@@ -1,5 +1,4 @@
 (function () {
-    var droped;
     var weight = {
         left: 0,
         right: 0,
@@ -24,27 +23,39 @@
             var topBowlTarget = parseFloat(getComputedStyle(bowlTarget).top);
             var topBowlOpposite = parseFloat(getComputedStyle(bowlOpposite).top);
 
-            bowlTarget.style.top = topBowlTarget + weightBag + 'px';
-            bowlOpposite.style.top = topBowlOpposite - weightBag + 'px';
-            scales.arrow.style.transform = 'rotate(' + weight.balance() + 'deg)';
-
             var oversTarget = document.querySelectorAll('[data-over="' + side + '"]');
             var oversOpposite = document.querySelectorAll('[data-over="' + opposite + '"]');
 
-            [].forEach.call(oversTarget, function (item) {
-                var coords = getCoords(item).top;
-                item.style.top = coords + weightBag + 'px';
-            });
+            var counter = 0;
+            var step = weightBag >= 0 ? 1 : -1;
 
-            [].forEach.call(oversOpposite, function (item) {
-                var coords = getCoords(item).top;
-                item.style.top = coords - weightBag + 'px';
-            });
+            var reaction = setInterval(function () {
+                if (counter == +weightBag) clearInterval(reaction);
+                topBowlTarget += step;
+                topBowlOpposite -= step;
+
+                bowlTarget.style.top = topBowlTarget + 'px';
+                bowlOpposite.style.top = topBowlOpposite + 'px';
+                scales.arrow.style.transform = 'rotate(' + balance + 'deg)';
+
+                [].forEach.call(oversTarget, function (item) {
+                    var coords = getCoords(item).top;
+                    item.style.top = coords + step + 'px';
+                });
+
+                [].forEach.call(oversOpposite, function (item) {
+                    var coords = getCoords(item).top;
+                    item.style.top = coords - step + 'px';
+                });
+
+                counter += step;
+            }, 10);
         }
     }
 
     document.onmousedown = function (event) {
         if (event.target.className != 'bag') return;
+        var droped;
         clearInterval(droped);
 
         var bag = event.target;
@@ -79,14 +90,13 @@
             bag.style.top = event.pageY - shiftY + 'px';
         }
 
-        function dropBag(event) {
+        function dropBag() {
             var newCoords = getCoords(bag);
 
             var side = getSide();
             var topTargetBowl = side ? getCoords(scales[side + 'Bowl']).top : 0;
             var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : 700;
 
-            // попробовать сделать без интервалов
             droped = setInterval(function () {
                 if (newCoords.top >= maxDroped) {
                     if (maxDroped == topTargetBowl - bag.clientHeight) {
@@ -94,6 +104,8 @@
                     }
 
                     clearInterval(droped);
+                    bag.style.top = maxDroped + 'px';
+                    return;
                 };
 
                 newCoords.top += +bagWeight;
