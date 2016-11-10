@@ -6,98 +6,50 @@ h1 {
 
 // Весы
 #scales {
+    position: relative;
+    width: 1143px;
+    margin: auto;
     & div {
         margin: auto;
     }
 }
 
-#head-top {
-    width: 300px;
-    height: 440px;
-    background-color: @c-main;
-    border-radius: 200px 200px 50px 50px;
+#scales-body {
+    width: 1143px;
+    height: 832px;
+    background-image: url(../img/scales.png);
     position: relative;
-    &:after {
-        content: '';
-        position: absolute;
-        width: 52px;
-        height: 450px;
-        left: -40px;
-        top: 0;
-        background-color: white;
-        transform: rotate(-10deg);
-    }
-    &:before {
-        content: '';
-        position: absolute;
-        width: 52px;
-        height: 450px;
-        right: -40px;
-        top: 0;
-        background-color: white;
-        transform: rotate(10deg);
-    }
+    z-index: 20;
 }
 
-#scoreboard {
-    background-color: @c-glass;
-    width: 230px;
-    height: 130px;
-    top: 40px;
+#scales-head {
     position: relative;
-    border-radius: 200px 200px 20px 20px;
-    overflow: hidden;
-    img {
-        top: 30px;
-        display: block;
-        max-height: 100px;
-        margin: auto;
-        position: relative;
-        transform-origin: 50% 100%;
-        transition: 0.2s;
-        transform: rotate(0deg);
-    }
+    z-index: 10;
 }
 
-#head-bottom {
-    background-color: @c-main;
-    width: 200px;
-    height: 100px;
-}
-
-#base {
-    background-color: @c-main;
-    width: 1150px;
-    height: 100px;
-    border-radius: 10px 10px 100px 100px;
-    position: relative;
+#arrow {
+    position: absolute;
+    left: ~'calc(50% - 11px)';
+    top: 60px;
+    transition: 0.2s;
+    transform-origin: 50% 100%;
+    transform: rotate(0deg);
 }
 
 .bowl {
-    width: 350px;
-    height: 20px;
-    border-radius: 10px 10px 100px 100px;
-    background-color: @c-main;
+    width: 367px;
+    height: 142px;
     position: absolute;
-    top: -50px;
-    //transition: 0.2s;
-    &:after {
-        content: '';
-        width: 30px;
-        height: 100px;
-        background-color: black;
-        position: absolute;
-        left: ~'calc(50% - 15px)';
-        z-index: -1;
-    }
+    top: 620px;
+    background-image: url(../img/bowl.png);
 }
 
 #bowl-left {
-    left: 0;
+    left: 65px;
 }
 
 #bowl-right {
-    right: 0;
+    right: 65px;
 }
 
 // Чемоданы
@@ -105,6 +57,8 @@ h1 {
     max-width: 200px;
     display: block;
     position: absolute;
+    z-index: 30;
     top: 20px;
     left: 20px;
+    cursor: pointer;
 }

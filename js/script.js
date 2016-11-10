@@ -36,7 +36,7 @@
 
                 bowlTarget.style.top = topBowlTarget + 'px';
                 bowlOpposite.style.top = topBowlOpposite + 'px';
-                scales.arrow.style.transform = 'rotate(' + balance + 'deg)';
+                scales.arrow.style.transform = 'rotate(' + balance * 3 + 'deg)';
 
                 [].forEach.call(oversTarget, function (item) {
                     var coords = getCoords(item).top;
@@ -55,19 +55,20 @@
 
     document.onmousedown = function (event) {
         if (event.target.className != 'bag') return;
+
         var droped;
         clearInterval(droped);
 
         var bag = event.target;
         var bagWeight = bag.getAttribute('data-weight');
 
-        if (bag.getAttribute('data-over') != 'null') {
-            scales.changeWeight(-bagWeight, bag.getAttribute('data-over'));
-        }
-
         bag.ondragstart = function () {
             return false;
         };
+
+        if (bag.getAttribute('data-over') != 'null') {
+            scales.changeWeight(-bagWeight, bag.getAttribute('data-over'));
+        }
 
         var coords = getCoords(bag);
         var shiftX = event.pageX - coords.left;
