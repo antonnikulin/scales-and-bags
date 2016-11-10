@@ -27,6 +27,19 @@
             bowlTarget.style.top = topBowlTarget + weightBag + 'px';
             bowlOpposite.style.top = topBowlOpposite - weightBag + 'px';
             scales.arrow.style.transform = 'rotate(' + weight.balance() + 'deg)';
+
+            var oversTarget = document.querySelectorAll('[data-over="' + side + '"]');
+            var oversOpposite = document.querySelectorAll('[data-over="' + opposite + '"]');
+
+            [].forEach.call(oversTarget, function (item) {
+                var coords = getCoords(item).top;
+                item.style.top = coords + weightBag + 'px';
+            });
+
+            [].forEach.call(oversOpposite, function (item) {
+                var coords = getCoords(item).top;
+                item.style.top = coords - weightBag + 'px';
+            });
         }
     }
 
@@ -78,8 +91,6 @@
                 if (newCoords.top >= maxDroped) {
                     if (maxDroped == topTargetBowl - bag.clientHeight) {
                         scales.changeWeight(+bagWeight, side);
-                        var dopCoords = getCoords(bag);
-                        bag.style.top = dopCoords.top - weight;
                     }
 
                     clearInterval(droped);
@@ -114,10 +125,8 @@
 
         return {
             top: box.top + pageYOffset,
-            botton: box.bottom + pageYOffset,
             left: box.left + pageXOffset,
             right: box.right + pageXOffset
         };
-
     }
 })();
