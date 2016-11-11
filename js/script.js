@@ -8,13 +8,14 @@
 
         [].forEach.call(bags, function (bag) {
             bag.style.left = left + 'px';
-            left += 40;
+            left += 30;
         });
     });
 
     var weight = {
         left: 0,
         right: 0,
+        extraWeight: 0,
         balance: function () {
             return this.right - this.left;
         }
@@ -25,12 +26,6 @@
         rightBowl: document.getElementById('bowl-right'),
         arrow: document.getElementById('arrow'),
         changeWeight: function (weightBag, side) {
-            weight[side] += weightBag;
-            var balance = weight.balance();
-
-            console.log('balance', balance);
-            if (balance * 2 >= 90 || balance * 2 <= -90) return;
-
             var opposite = side == 'left' ? 'right' : 'left';
 
             var bowlTarget = this[side + 'Bowl'];
@@ -50,6 +45,14 @@
                 if (counter == +weightBag) clearInterval(reaction);
                 topBowlTarget += step;
                 topBowlOpposite -= step;
+                weight[side] += step;
+
+                var balance = weight.balance();
+
+                if (Math.abs(balance) >= 45) {
+                    counter += step;
+                    return;
+                }
 
                 bowlTarget.style.top = topBowlTarget + 'px';
                 bowlOpposite.style.top = topBowlOpposite + 'px';
@@ -114,9 +117,10 @@
 
             var side = getSide();
             var topTargetBowl = side ? getCoords(scales[side + 'Bowl']).top : 0;
-            var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : 800;
+            var pageHeight = document.documentElement.clientHeight - bag.clientHeight - 10;
+            var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : pageHeight;
 
-            if (maxDroped == 800) {
+            if (maxDroped == pageHeight) {
                 bag.setAttribute('data-over', null);
             }
 

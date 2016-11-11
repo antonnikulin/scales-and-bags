@@ -41,9 +41,9 @@ h1 {
 }
 .bowl {
   width: 367px;
-  height: 142px;
+  height: 172px;
   position: absolute;
-  top: 620px;
+  top: 610px;
   background-image: url(../img/bowl.png);
 }
 #bowl-left {
