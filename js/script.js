@@ -1,4 +1,17 @@
 (function () {
+    var shelfs = document.querySelectorAll('.shelf');
+
+    // Аккуратно размещаем чемоданы на полках
+    [].forEach.call(shelfs, function (shelf) {
+        var bags = shelf.querySelectorAll('.bag');
+        var left = 0;
+
+        [].forEach.call(bags, function (bag) {
+            bag.style.left = left + 'px';
+            left += 40;
+        });
+    });
+
     var weight = {
         left: 0,
         right: 0,
@@ -15,6 +28,9 @@
             weight[side] += weightBag;
             var balance = weight.balance();
 
+            console.log('balance', balance);
+            if (balance * 2 >= 90 || balance * 2 <= -90) return;
+
             var opposite = side == 'left' ? 'right' : 'left';
 
             var bowlTarget = this[side + 'Bowl'];
@@ -29,6 +45,7 @@
             var counter = 0;
             var step = weightBag >= 0 ? 1 : -1;
 
+            // Динамически изменяем положение чаш, стрелки и всех чемоданов на чашах
             var reaction = setInterval(function () {
                 if (counter == +weightBag) clearInterval(reaction);
                 topBowlTarget += step;
@@ -36,7 +53,7 @@
 
                 bowlTarget.style.top = topBowlTarget + 'px';
                 bowlOpposite.style.top = topBowlOpposite + 'px';
-                scales.arrow.style.transform = 'rotate(' + balance * 3 + 'deg)';
+                scales.arrow.style.transform = 'rotate(' + balance * 2 + 'deg)';
 
                 [].forEach.call(oversTarget, function (item) {
                     var coords = getCoords(item).top;
@@ -75,6 +92,7 @@
         var shiftY = event.pageY - coords.top;
 
         moveBag(event);
+        document.body.appendChild(bag);
 
         document.onmousemove = function (event) {
             moveBag(event);
@@ -96,7 +114,11 @@
 
             var side = getSide();
             var topTargetBowl = side ? getCoords(scales[side + 'Bowl']).top : 0;
-            var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : 700;
+            var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : 800;
+
+            if (maxDroped == 800) {
+                bag.setAttribute('data-over', null);
+            }
 
             droped = setInterval(function () {
                 if (newCoords.top >= maxDroped) {
