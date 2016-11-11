@@ -88,6 +88,7 @@
 
         if (bag.getAttribute('data-over') != 'null') {
             scales.changeWeight(-bagWeight, bag.getAttribute('data-over'));
+            bag.setAttribute('data-over', 'null');
         }
 
         var coords = getCoords(bag);
@@ -141,7 +142,7 @@
 
                 newCoords.top += +bagWeight;
                 bag.style.top = newCoords.top + 'px';
-            }, 10);
+            }, 1);
 
             function getSide() {
                 var bagCenter = newCoords.left + bag.clientWidth / 2;

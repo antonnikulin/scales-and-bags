@@ -11,6 +11,11 @@ body {
 h1 {
   text-align: center;
   font-family: Arial;
+  padding: 10px 15px;
+  background-color: #584131;
+  box-shadow: 4px 3px 5px rgba(72, 72, 72, 0.37);
+  color: white;
+  transform: rotate(2deg);
 }
 #scales {
   position: relative;
@@ -59,7 +64,9 @@ h1 {
 .shelf {
   width: 300px;
   height: 5px;
-  background-color: black;
+  background-color: #404040;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 4px 3px 5px rgba(72, 72, 72, 0.37);
   margin-top: 180px;
   position: relative;
 }
