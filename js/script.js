@@ -1,5 +1,6 @@
 (function () {
     var shelfs = document.querySelectorAll('.shelf');
+    var taken = false;
 
     // Аккуратно размещаем чемоданы на полках
     [].forEach.call(shelfs, function (shelf) {
@@ -77,10 +78,8 @@
     document.onmousedown = function (event) {
         if (event.target.className != 'bag') return;
 
-        var droped;
-        clearInterval(droped);
-
         var bag = event.target;
+        taken = bag;
         var bagWeight = bag.getAttribute('data-weight');
 
         bag.ondragstart = function () {
@@ -114,6 +113,8 @@
         }
 
         function dropBag() {
+
+            taken = false;
             var newCoords = getCoords(bag);
 
             var side = getSide();
@@ -125,9 +126,11 @@
                 bag.setAttribute('data-over', null);
             }
 
-            droped = setInterval(function () {
+            var droped = setInterval(function () {
+                if (taken == bag) clearInterval(droped);
                 if (newCoords.top >= maxDroped) {
                     if (maxDroped == topTargetBowl - bag.clientHeight) {
+                        bag.setAttribute('data-over', side);
                         scales.changeWeight(+bagWeight, side);
                     }
 
@@ -138,7 +141,7 @@
 
                 newCoords.top += +bagWeight;
                 bag.style.top = newCoords.top + 'px';
-            }, 1);
+            }, 10);
 
             function getSide() {
                 var bagCenter = newCoords.left + bag.clientWidth / 2;
@@ -154,7 +157,6 @@
                 if (isOverBowlLeft) side = 'left';
                 if (isOverBowlRight) side = 'right';
 
-                bag.setAttribute('data-over', side);
                 return side;
             }
         }
