@@ -15,7 +15,6 @@
     var weight = {
         left: 0,
         right: 0,
-        extraWeight: 0,
         balance: function () {
             return this.right - this.left;
         }
@@ -31,9 +30,6 @@
             var bowlTarget = this[side + 'Bowl'];
             var bowlOpposite = this[opposite + 'Bowl'];
 
-            var topBowlTarget = parseFloat(getComputedStyle(bowlTarget).top);
-            var topBowlOpposite = parseFloat(getComputedStyle(bowlOpposite).top);
-
             var oversTarget = document.querySelectorAll('[data-over="' + side + '"]');
             var oversOpposite = document.querySelectorAll('[data-over="' + opposite + '"]');
 
@@ -43,10 +39,8 @@
             // Динамически изменяем положение чаш, стрелки и всех чемоданов на чашах
             var reaction = setInterval(function () {
                 if (counter == +weightBag) clearInterval(reaction);
-                topBowlTarget += step;
-                topBowlOpposite -= step;
-                weight[side] += step;
 
+                weight[side] += step;
                 var balance = weight.balance();
 
                 if (Math.abs(balance) >= 45) {
@@ -54,8 +48,15 @@
                     return;
                 }
 
+                var topBowlTarget = parseFloat(getComputedStyle(bowlTarget).top);
+                var topBowlOpposite = parseFloat(getComputedStyle(bowlOpposite).top);
+
+                topBowlTarget += step;
+                topBowlOpposite -= step;
+
                 bowlTarget.style.top = topBowlTarget + 'px';
                 bowlOpposite.style.top = topBowlOpposite + 'px';
+
                 scales.arrow.style.transform = 'rotate(' + balance * 2 + 'deg)';
 
                 [].forEach.call(oversTarget, function (item) {
