@@ -114,11 +114,10 @@
         }
 
         function dropBag() {
-
             taken = false;
             var newCoords = getCoords(bag);
-
             var side = getSide();
+
             var topTargetBowl = side ? getCoords(scales[side + 'Bowl']).top : 0;
             var pageHeight = document.documentElement.clientHeight - bag.clientHeight - 10;
             var maxDroped = side != 'null' && (newCoords.top <= topTargetBowl - bag.clientHeight) ? topTargetBowl - bag.clientHeight : pageHeight;
@@ -128,7 +127,13 @@
             }
 
             var droped = setInterval(function () {
+                if (maxDroped != pageHeight) {
+                    maxDroped = isMaxDropedChange(maxDroped);
+                    topTargetBowl = getCoords(scales[side + 'Bowl']).top;
+                }
+
                 if (taken == bag) clearInterval(droped);
+
                 if (newCoords.top >= maxDroped) {
                     if (maxDroped == topTargetBowl - bag.clientHeight) {
                         bag.setAttribute('data-over', side);
@@ -159,6 +164,11 @@
                 if (isOverBowlRight) side = 'right';
 
                 return side;
+            }
+
+            function isMaxDropedChange(maxDroped) {
+                var newMaxDroped = side ? getCoords(scales[side + 'Bowl']).top - bag.clientHeight : 0;
+                return newMaxDroped != maxDroped ? newMaxDroped : maxDroped;
             }
         }
     }
