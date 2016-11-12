@@ -25,7 +25,8 @@
         leftBowl: document.getElementById('bowl-left'),
         rightBowl: document.getElementById('bowl-right'),
         arrow: document.getElementById('arrow'),
-        changeWeight: function (weightBag, side) {
+        changeWeight: function (weightBag, side, acceleration) {
+            var accelerate = Math.round(acceleration / 10);
             var opposite = side == 'left' ? 'right' : 'left';
 
             var bowlTarget = this[side + 'Bowl'];
@@ -36,11 +37,26 @@
 
             var counter = 0;
             var step = weightBag >= 0 ? 1 : -1;
+            weightBag += accelerate;
 
             // Динамически изменяем положение чаш, стрелки и всех чемоданов на чашах
             var reaction = setInterval(function () {
-                if (counter == +weightBag) clearInterval(reaction);
+                if (counter == +weightBag) {
+                    clearInterval(reaction);
+                    var reverseCounter = 0;
 
+                    var reverse = setInterval(function () {
+                        if (reverseCounter == accelerate) clearInterval(reverse);
+                        moveScales(step * -1);
+                        reverseCounter += step;
+                    }, 20);
+                }
+
+                moveScales(step);
+                counter += step;
+            }, 10);
+
+            function moveScales(step) {
                 weight[side] += step;
                 var balance = weight.balance();
 
@@ -69,9 +85,7 @@
                     var coords = getCoords(item).top;
                     item.style.top = coords - step + 'px';
                 });
-
-                counter += step;
-            }, 10);
+            }
         }
     }
 
@@ -87,7 +101,7 @@
         };
 
         if (bag.getAttribute('data-over') != 'null') {
-            scales.changeWeight(-bagWeight, bag.getAttribute('data-over'));
+            scales.changeWeight(-bagWeight, bag.getAttribute('data-over'), 0);
             bag.setAttribute('data-over', 'null');
         }
 
@@ -126,6 +140,8 @@
                 bag.setAttribute('data-over', null);
             }
 
+            var acceleration = bagWeight;
+
             var droped = setInterval(function () {
                 if (maxDroped != pageHeight) {
                     maxDroped = isMaxDropedChange(maxDroped);
@@ -137,7 +153,7 @@
                 if (newCoords.top >= maxDroped) {
                     if (maxDroped == topTargetBowl - bag.clientHeight) {
                         bag.setAttribute('data-over', side);
-                        scales.changeWeight(+bagWeight, side);
+                        scales.changeWeight(+bagWeight, side, acceleration);
                     }
 
                     clearInterval(droped);
@@ -145,6 +161,7 @@
                     return;
                 };
 
+                //acceleration++;
                 newCoords.top += +bagWeight;
                 bag.style.top = newCoords.top + 'px';
             }, 1);
