@@ -16,6 +16,15 @@ h1 {
   box-shadow: 4px 3px 5px rgba(72, 72, 72, 0.37);
   color: white;
   transform: rotate(2deg);
+  cursor: default;
+  animation: shake 0.2s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+}
+h1:hover,
+h1:focus {
+  animation-play-state: running;
 }
 #scales {
   position: relative;
@@ -60,6 +69,7 @@ h1 {
   position: absolute;
   top: 20px;
   left: 20px;
+  z-index: 30;
 }
 .shelf {
   width: 300px;
@@ -77,4 +87,35 @@ h1 {
   z-index: 30;
   bottom: 5px;
   cursor: pointer;
+}
+#again {
+  background-color: #a81616;
+  padding: 10px 15px;
+  color: white;
+  font: 22px Arial;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 4px 3px 5px rgba(72, 72, 72, 0.37);
+  border-radius: 10px;
+  position: absolute;
+  top: 120px;
+  right: 10px;
+  transition: 0.2s;
+}
+#again:focus,
+#again:hover {
+  background-color: #bf1919;
+}
+#again:active {
+  background-color: #911313;
+  box-shadow: 2px 2px 2px rgba(26, 26, 26, 0.37);
+}
+@keyframes shake {
+  from {
+    transform: rotate(2deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
 }

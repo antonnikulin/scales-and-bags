@@ -64,4 +64,8 @@
 
         return shelfs;
     }
+
+    document.getElementById('again').onclick = function () {
+        location.reload();
+    }
 })();
