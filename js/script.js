@@ -61,7 +61,6 @@
                 var balance = weight.balance();
 
                 if (Math.abs(balance) >= 45) {
-                    counter += step;
                     return;
                 }
 
@@ -161,7 +160,8 @@
                     return;
                 };
 
-                newCoords.top += acceleration++/ 5;
+                acceleration++;
+                newCoords.top += 1 * acceleration / 5;
                 bag.style.top = newCoords.top + 'px';
             }, 1);
 
