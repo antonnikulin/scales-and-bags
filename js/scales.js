@@ -1,17 +1,5 @@
 (function () {
-    var shelfs = document.querySelectorAll('.shelf');
-    var taken = false;
 
-    // Аккуратно размещаем чемоданы на полках
-    [].forEach.call(shelfs, function (shelf) {
-        var bags = shelf.querySelectorAll('.bag');
-        var left = 0;
-
-        [].forEach.call(bags, function (bag) {
-            bag.style.left = left + 'px';
-            left += 30;
-        });
-    });
 
     var weight = {
         left: 0,
