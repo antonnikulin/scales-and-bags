@@ -140,7 +140,7 @@
                 bag.setAttribute('data-over', null);
             }
 
-            var acceleration = bagWeight;
+            var acceleration = 1;
 
             var droped = setInterval(function () {
                 if (maxDroped != pageHeight) {
@@ -161,8 +161,7 @@
                     return;
                 };
 
-                //acceleration++;
-                newCoords.top += +bagWeight;
+                newCoords.top += acceleration++/ 5;
                 bag.style.top = newCoords.top + 'px';
             }, 1);
 
